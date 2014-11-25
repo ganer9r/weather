@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">변덕쟁이 날씨양</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_addr">주소 검색</string>
+
+    <string name="btn_addr">주소변경</string>
+    <string name="btn_change_img">그림변경</string>
+
+</resources>
