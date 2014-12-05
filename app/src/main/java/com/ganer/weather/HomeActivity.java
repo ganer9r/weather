@@ -4,6 +4,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Gravity;
@@ -48,28 +52,28 @@ public class HomeActivity extends ActionBarActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
 
         Calendar cal = Calendar.getInstance();
-        mMonth = cal.get(Calendar.MONTH)+1;
-        btnChange   = (Button) findViewById(R.id.btn_change);
-        btnAddr     = (Button) findViewById(R.id.btn_addr);
-        mImageview  = (ImageView) findViewById(R.id.character);
-        mMsgView  = (TextView) findViewById(R.id.message);
+        mMonth = cal.get(Calendar.MONTH) + 1;
+        btnChange = (Button) findViewById(R.id.btn_change);
+        btnAddr = (Button) findViewById(R.id.btn_addr);
+        mImageview = (ImageView) findViewById(R.id.character);
+        mMsgView = (TextView) findViewById(R.id.message);
 
         btnChange.setOnClickListener(this);
         btnAddr.setOnClickListener(this);
 
 
-
         SharedPreferences prefs = getSharedPreferences("PrefName", MODE_PRIVATE);
         String dong = prefs.getString("dong", "");
 
-        if(dong == ""){
+        checkVersion();
+        if (dong == "") {
             Intent intent = new Intent(this, AddrActivity.class);
             startActivity(intent);
-        }else{
+        } else {
             getWeather();
         }
 
-        AdView adView = (AdView)this.findViewById(R.id.adView);
+        AdView adView = (AdView) this.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
     }
@@ -83,21 +87,21 @@ public class HomeActivity extends ActionBarActivity implements View.OnClickListe
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch(keyCode) {
+        switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 final View innerView = getLayoutInflater().inflate(R.layout.dialog_exit, null);
-                AdView adView = (AdView)innerView.findViewById(R.id.adViweExit);
+                AdView adView = (AdView) innerView.findViewById(R.id.adViweExit);
                 AdRequest adRequest = new AdRequest.Builder().build();
                 adView.loadAd(adRequest);
 
                 new AlertDialog.Builder(this)
-                        .setPositiveButton("종료", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.btn_exit, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 finish();
                             }
                         })
                         .setView(innerView)
-                        .setNegativeButton("취소", null).show();
+                        .setNegativeButton(R.string.btn_cancel, null).show();
 
 
                 return false;
@@ -125,20 +129,80 @@ public class HomeActivity extends ActionBarActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-    private void setContent(Bundle data){
+    private void setContent(Bundle data) {
         ArrayList<Bundle> list = (ArrayList<Bundle>) data.getSerializable("items");
 
-        TextView temp  = (TextView) findViewById(R.id.temp);
-        TextView addr  = (TextView) findViewById(R.id.addr);
-        TextView wfKor  = (TextView) findViewById(R.id.wfKor);
+        TextView temp = (TextView) findViewById(R.id.temp);
+        TextView addr = (TextView) findViewById(R.id.addr);
+        TextView wfKor = (TextView) findViewById(R.id.wfKor);
 
-        temp.setText( list.get(0).getDouble("temp")+"" );
-        addr.setText( data.getString("location") );
-        wfKor.setText( list.get(0).getString("wfKor") );
+        double tempVar = list.get(0).getDouble("temp");
+        if (tempVar < 0)
+            temp.setTextColor(Color.rgb(100, 100, 200));
+        temp.setText(tempVar + "");
+        addr.setText(data.getString("location"));
+        wfKor.setText(list.get(0).getString("wfKor"));
 
         Bundle emotion = Emotion.get(list);
         mImageview.setImageResource(emotion.getInt("emotion"));
         mMsgView.setText(emotion.getString("message"));
+
+    }
+
+    protected void checkVersion() {
+        RequestClient.get("http://ganer.jdpp.net/lastver.txt", null, verHandler);
+    }
+
+    private AsyncHttpResponseHandler verHandler = new AsyncHttpResponseHandler() {
+        @Override
+        public void onStart() {
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, byte[] response,
+                              Throwable e) {
+            e.printStackTrace();
+
+
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "네트워크 연결에 실패하였습니다.", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+            // TODO Auto-generated method stub
+            String res = new String(response);
+            int lastVer = Integer.parseInt(res.trim());
+
+            PackageInfo pi = null;
+            try {
+                pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            int ver = pi.versionCode;
+            if (ver < lastVer) {
+                showDialog();
+            }
+
+        }
+    };
+
+    public void showDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.title_update)
+                .setMessage(R.string.update_msg)
+                .setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ganer.weather"));
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, null).show();
+
 
     }
 

@@ -14,7 +14,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".HomeActivity"
+            android:name="com.ganer.weather.HomeActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddrActivity"
+            android:name="com.ganer.weather.AddrActivity"
             android:label="@string/title_activity_addr" >
         </activity>
 

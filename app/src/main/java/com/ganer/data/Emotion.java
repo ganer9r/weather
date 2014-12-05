@@ -24,6 +24,15 @@ public class Emotion {
             case 11 :
                     emotion = _10(weathers);
                 break;
+            case 12 :
+                emotion = _12(weathers);
+                break;
+            case 1 :
+                emotion = _12(weathers);
+                break;
+            case 2 :
+                emotion = _12(weathers);
+                break;
             default :
                     emotion = new Bundle();
                     emotion.putInt("emotion", R.drawable.char_1_1);
@@ -86,7 +95,52 @@ public class Emotion {
 
         int a = (int) (Math.random()*msgs.length);
         return msgs[a];
+    }
 
+    public static String _winter(int type){
+        String[] msgs;
+
+        switch(type){
+            case 2 :
+                msgs = new String[]{
+                        "펄펄~ 눈이 내리네~~"
+                };
+                break;
+            case 3 :
+                msgs = new String[]{
+                        "음.. 눈이 올것 같은데?",
+                        "우산 챙겨 가.. 눈올것 같아"
+                };
+                break;
+            case 4 :
+                msgs = new String[]{"꺄악~ 바람이..", "바람 부니까 더 진~~~~짜 추워!!"};
+                break;
+            case 5 :
+                msgs = new String[]{
+                        "와~ 엄청 추워!!!",
+                        "이런날엔 집밖으로 나가면 안돼",
+                        "날 추우니까 옷 좀 두껍게 입어",
+                        "여기는 시베리아... 덜덜덜"
+                };
+                break;
+            case 6 :
+                msgs = new String[]{
+                        "날씨 좋다~ 오랫만에 따뜻하네..",
+                        "오? 벌써 봄이오나?",
+                        "따뜻해~ 데이트 가자!!"
+                };
+                break;
+            default :
+                msgs = new String[]{
+                        "날도 추운데 오뎅국물로 몸좀 녹일까?",
+                        "겨울이면 이정도는 추워야지",
+                        "겨울에는 온천이 딱이에요"
+                };
+                break;
+        }
+
+        int a = (int) (Math.random()*msgs.length);
+        return msgs[a];
     }
 
     public static Bundle _10(ArrayList<Bundle> weathers){
@@ -110,7 +164,6 @@ public class Emotion {
 
         return emotion;
     }
-
     public static Bundle _12(ArrayList<Bundle> weathers){
         Bundle emotion = new Bundle();
 
@@ -119,14 +172,15 @@ public class Emotion {
         int pty3 = weathers.get(2).getInt("pty");  // 6시간 후
 
         if(pty1 > 0){
-            emotion.putInt("emotion", R.drawable.char_3_5);
-            emotion.putString("message", "펄~ 펄 눈이내리네~~");
+            emotion.putInt("emotion", R.drawable.char_4_7);
+            emotion.putString("message", _winter(2));  // 눈옴
         }else if(pty2 > 0 || pty3 > 0){
-            emotion.putInt("emotion", R.drawable.char_3_1);
+            emotion.putInt("emotion", R.drawable.char_4_1);
             emotion.putString("message", "눈이 올것 같은데? 약속 잡을까?");
+            emotion.putString("message", _winter(3));  // 올것같음
         }else {
-            emotion.putInt("emotion", R.drawable.char_3_1);
-            emotion.putString("message", "날씨 좋아~ 놀러가고 싶어..");
+            emotion.putInt("emotion", R.drawable.char_4_1);
+            emotion.putString("message", _winter(1));  // 일반
         }
 
         return emotion;

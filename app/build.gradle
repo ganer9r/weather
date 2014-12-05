@@ -5,10 +5,10 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "com.ganer.weather"
+        applicationId "com.ganer.weather2"
         minSdkVersion 12
         targetSdkVersion 20
-        versionCode 2
+        versionCode 1
         versionName "1.0.1"
     }
     buildTypes {
